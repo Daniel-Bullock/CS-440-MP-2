@@ -16,18 +16,23 @@ import numpy as np
 from const import *
 
 def computeCoordinate(start, length, angle):
-    """Compute the end cooridinate based on the given start position, length and angle.
+    """Compute the end coordinate based on the given start position, length and angle.
 
         Args:
             start (tuple): base of the arm link. (x-coordinate, y-coordinate)
             length (int): length of the arm link
-            angle (int): degree of the arm link from x-axis to couter-clockwise
+            angle (int): degree of the arm link from x-axis to counter-clockwise
 
         Return:
             End position (int,int):of the arm link, (x-coordinate, y-coordinate)
     """
 
-    return (0, 0)
+    endX = start[0] + int(length * math.cos(math.radians(angle)))  # math.cos() should be in radians
+    endY = start[1] - int(length * math.sin(math.radians(angle)))
+
+    # print(angle, math.cos(math.radians(angle)), endX, endY)
+    return (endX, endY)
+
 
 def doesArmTouchObjects(armPosDist, objects, isGoal=False):
     """Determine whether the given arm links touch any obstacle or goal
@@ -41,7 +46,54 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
         Return:
             True if touched. False if not.
     """
+
+    for arm in armPosDist:
+        start = arm[0]
+        end = arm[1]
+        pad = arm[2]
+
+        for obj in objects:
+            rad = obj[2]
+            if not isGoal:
+                rad = obj[2] + pad
+            if intersect((obj[0], obj[1]), start, end) <= rad:
+                print("TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING")
+                return True
+
     return False
+
+
+def intersect(obj_pos, start, end):
+    # Inspired by:
+    # https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+    x = end[0] - start[0]
+    y = end[1] - start[1]
+    objX = obj_pos[0] - start[0]
+    objY = obj_pos[1] - start[1]
+
+    dot = objX * x + objY * y       # dot product of difference between end and start and difference between object and start
+    len_ = x ** 2 + y ** 2          # pythagorean
+
+    a = 0
+    b = 0
+
+    if len_ != 0:
+        if dot > len_:
+            a = end[0]
+            b = end[1]
+        else:
+            a = start[0] + dot/len_ * x
+            b = start[1] + dot/len_ * y
+    else:
+        a = start[0]
+        b = start[1]
+
+    dx = obj_pos[0] - a
+    dy = obj_pos[1] - b
+    dist = np.sqrt(dx * dx + dy * dy)  # pythagorean
+
+    return dist
+
 
 def doesArmTipTouchGoals(armEnd, goals):
     """Determine whether the given arm tick touch goals
@@ -52,6 +104,12 @@ def doesArmTipTouchGoals(armEnd, goals):
         Return:
             True if arm tip touches any goal. False if not.
     """
+    for goal in goals:
+        dist = np.sqrt(((armEnd[0] - goal[0]) ** 2) + ((armEnd[1] - goal[1]) ** 2))
+        if dist <= goal[2]:
+            print("GOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOAL")
+            return True
+
     return False
 
 
@@ -65,6 +123,19 @@ def isArmWithinWindow(armPos, window):
         Return:
             True if all parts are in the window. False if not.
     """
+    w = window[0]
+    h = window[1]
+    for arm in armPos:
+        start = arm[0]
+        end = arm[1]
+        startX = start[0]
+        startY = start[1]
+        endX = end[0]
+        endY = end[1]
+        if startX < 0 or startX > w or startY < 0 or startY > h or endX < 0 or endX > w or endY < 0 or endY > h:
+            print("OUT OF WINDOW OUT OF WINDOW OUT OF WINDOW OUT OF WINDOW")
+            return False
+
     return True
 
 
