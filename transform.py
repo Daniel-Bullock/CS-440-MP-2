@@ -34,4 +34,66 @@ def transformToMaze(arm, goals, obstacles, window, granularity):
             Maze: the maze instance generated based on input arguments.
 
     """
-    pass
+    # arm link -- (armBasePos, armLinkSpec)
+
+    # rows/cols = int(  (max_angle-min_angle)/granularity + 1   )
+    rows = int((arm.getArmLimit()[0][1]-arm.getArmLimit()[0][0])/granularity + 1)
+    cols = int((arm.getArmLimit()[1][1] - arm.getArmLimit()[1][0]) / granularity + 1)
+    print(rows, cols)
+
+    maze = [[SPACE_CHAR for i in range(cols)] for j in range(rows)]
+    # maze_map[init_alpha][init_beta] = START_CHAR
+
+    alpha_limits = arm.getArmLimit()[0]
+    beta_limits = arm.getArmLimit()[1]
+
+    offset = [alpha_limits[0], beta_limits[0]]
+
+    alpha, beta = alpha_limits[0], beta_limits[0] # min of alpha to start out
+
+    alpha_max = alpha_limits[1]
+    beta_max = beta_limits[1]
+
+    init_alpha = arm.getArmAngle()[0]
+    init_beta = arm.getArmAngle()[1]
+
+    while alpha <= alpha_max:
+        beta = beta_limits[0]
+        while beta <= beta_max:
+
+            arm.setArmAngle((alpha, beta))
+            arm_pos = arm.getArmPos()
+            tip = arm_pos[1][1]
+            arm_dist = arm.getArmPosDist()   # [start,end,padding distance] for all arm links
+
+            idx = angleToIdx([alpha, beta], offset, granularity)
+            idx1 = idx[0]
+            idx2 = idx[1]
+
+            if alpha == init_alpha and beta == init_beta:
+                maze[idx1][idx2] = START_CHAR
+            elif doesArmTouchObjects(arm_dist, obstacles):
+                maze[idx1][idx2] = WALL_CHAR
+            elif doesArmTipTouchGoals(tip, goals):
+                maze[idx1][idx2] = OBJECTIVE_CHAR
+            elif isArmWithinWindow(arm_pos, window):
+                maze[idx1][idx2] = WALL_CHAR
+            else:
+                maze[idx1][idx2] = SPACE_CHAR
+
+            beta += granularity
+        alpha += granularity
+    #Maze --- def __init__(self, input_map, offsets, granularity)
+
+    return Maze(maze, offset, granularity)
+
+
+
+
+
+
+
+
+
+
+
