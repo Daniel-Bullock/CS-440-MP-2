@@ -57,7 +57,7 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
             if not isGoal:
                 rad = obj[2] + pad
             if intersect((obj[0], obj[1]), start, end) <= rad:
-                print("TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING")
+                # print("TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING TOUCHING")
                 return True
 
     return False
@@ -107,7 +107,7 @@ def doesArmTipTouchGoals(armEnd, goals):
     for goal in goals:
         dist = np.sqrt(((armEnd[0] - goal[0]) ** 2) + ((armEnd[1] - goal[1]) ** 2))
         if dist <= goal[2]:
-            print("GOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOAL")
+            # print("GOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOALGOAL")
             return True
 
     return False
@@ -133,7 +133,7 @@ def isArmWithinWindow(armPos, window):
         endX = end[0]
         endY = end[1]
         if startX < 0 or startX > w or startY < 0 or startY > h or endX < 0 or endX > w or endY < 0 or endY > h:
-            print("OUT OF WINDOW OUT OF WINDOW OUT OF WINDOW OUT OF WINDOW")
+            # print("OUT OF WINDOW OUT OF WINDOW OUT OF WINDOW OUT OF WINDOW")
             return False
 
     return True
