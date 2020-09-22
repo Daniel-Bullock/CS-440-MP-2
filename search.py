@@ -32,22 +32,26 @@ def bfs(maze):
     This function returns optimal path in a list, which contains start and objective.
     If no path found, return None. 
     """
+
     q = []
     visited = {}
     keys = {}
     selected = None
+    # print("mazestart", maze.getStart())
     q.append(maze.getStart())
-
+    # print(q)
     while len(q) > 0:
         curr = q.pop(0)
+        # print(curr)
         if maze.isObjective(curr[0], curr[1]):
             selected = curr
             break
-
+        # print(curr[0], curr[1])
         neighbors = maze.getNeighbors(curr[0], curr[1])
-
+        # print("neighbors", neighbors)
         for n in neighbors:
             if n not in visited:
+                # print("neighbors", n)
                 visited[n] = True
                 q.append(n)
                 keys[n] = curr
@@ -55,10 +59,18 @@ def bfs(maze):
     curr = selected
     path = []
     while curr != maze.getStart():
+        # print(curr)
+        # print(keys)
         path.append(curr)
         curr = keys[curr]
 
     path.append(curr)
     path.reverse()  # backtrace
     # print(path)
+
+    if not path:
+        return None
+
     return path
+
+    # return []
