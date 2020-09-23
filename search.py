@@ -56,6 +56,10 @@ def bfs(maze):
                 q.append(n)
                 keys[n] = curr
 
+                if maze.isObjective(n[0], n[1]):
+                    selected = n
+                    break
+
     curr = selected
     path = []
     while curr != maze.getStart():
