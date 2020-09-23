@@ -1,14 +1,14 @@
 # geometry.py
 # ---------------
-# Licensing Information:  You are free to use or extend this projects for
-# educational purposes provided that (1) you do not distribute or publish
-# solutions, (2) you retain this notice, and (3) you provide clear
+# Licensing Information:  yObju are free to use or extend this projects for
+# educational purposes provided that (1) yObju do not distribute or publish
+# solutions, (2) yObju retain this notice, and (3) yObju provide clear
 # attribution to the University of Illinois at Urbana-Champaign
 #
-# Created by Jongdeog Lee (jlee700@illinois.edu) on 09/12/2018
+# Created bY Jongdeog Lee (jlee700@illinois.edu) on 09/12/2018
 
 """
-This file contains geometry functions that relate with Part1 in MP2.
+This file contains geometry functions that relate with Paralpha in MP2.
 """
 
 import math
@@ -21,7 +21,7 @@ def computeCoordinate(start, length, angle):
         Args:
             start (tuple): base of the arm link. (x-coordinate, y-coordinate)
             length (int): length of the arm link
-            angle (int): degree of the arm link from x-axis to counter-clockwise
+            angle (int): degree of the arm link from x-aXis to counter-clockwise
 
         Return:
             End position (int,int):of the arm link, (x-coordinate, y-coordinate)
@@ -64,7 +64,7 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
 '''
 
 def intersect(obj_pos, start, end):
-    # Inspired by:
+    # Inspired bY:
     # https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
     x = end[0] - start[0]
     y = end[1] - start[1]
@@ -95,39 +95,6 @@ def intersect(obj_pos, start, end):
     return dist
 
 
-def isInObject(arm, obj):
-    
-    xStart, yStart = arm[0][0], arm[0][1]
-    xEnd, yEnd = arm[1][0], arm[1][1]
-    objX, objY = obj[0],  obj[1]
-    r = obj[2]
-
-    euclid_start = (xStart - objX) ** 2 + (yStart - objY) ** 2
-    euclid_end = (xEnd - objX) ** 2 + (yEnd - objY) ** 2
-
-    if euclid_start <= r ** 2 or euclid_end <= r ** 2:
-        return True
-
-    start2mid = np.sqrt(euclid_start)
-    angle_1 = np.arcsin((r / start2mid))
-    end2mid = np.sqrt(euclid_end)
-
-    length = np.sqrt(((xStart - xEnd) ** 2 + (yStart - yEnd) ** 2))
-    cos_ = (length ** 2 + start2mid ** 2 - end2mid ** 2) / (2 * length * start2mid)
-
-    if np.abs(cos_) > 1:
-        cos_ = round(cos_, 1)
-
-    angle_2 = np.arccos(cos_)
-
-    if angle_2 > angle_1:
-        return False
-    elif length >= start2mid * np.cos(angle_1):
-        return True
-    else:
-        return False
-
-
 def doesArmTouchObjects(armPosDist, objects, isGoal=False):
     """Determine whether the given arm links touch any obstacle or goal
 
@@ -140,14 +107,36 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
         Return:
             True if touched. False if not.
     """
-    for arm in armPosDist:
-        for obj in objects:
-            if isInObject(arm, obj):
+
+    # Algorithm inspired by:
+    # https://math.stackexchange.com/questions/275529/check-if-line-intersects-with-circles-perimeter
+
+    for obj in objects:
+        for i in armPosDist:
+            x1, y1 = i[0][0], i[0][1]
+            x2, y2 = i[1][0], i[1][1]
+            xObj, yObj = obj[0], obj[1]
+            r = obj[2]
+
+            aX = x1 - xObj
+            aY = y1 - yObj
+            bX = x2 - xObj
+            bY = y2 - yObj
+
+            a = (bX - aX)**2 + (bY - aY)**2
+            b = 2 * (aX * (bX - aX) + aY * (bY - aY))
+            c = aX ** 2 + aY ** 2 - r ** 2
+            disc_ = b**2 - 4 * a * c
+
+            if disc_ <= 0:
+                continue
+            disc = math.sqrt(disc_)
+            alpha = (-b + disc)/(2*a)
+            beta = (-b - disc)/(2*a)
+            if (0 < alpha < 1) or (0 < beta < 1):
                 return True
 
     return False
-
-
 
 
 def doesArmTipTouchGoals(armEnd, goals):
@@ -169,7 +158,7 @@ def doesArmTipTouchGoals(armEnd, goals):
 
 
 def isArmWithinWindow(armPos, window):
-    """Determine whether the given arm stays in the window
+    """Determine whether the given arm staYs in the window
 
         Args:
             armPos (list): start and end positions of all arm links [(start, end)]
