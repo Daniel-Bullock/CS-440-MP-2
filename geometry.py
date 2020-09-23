@@ -95,7 +95,7 @@ def intersect(obj_pos, start, end):
     return dist
 
 
-def check_sanity(arm, obj):
+def isInObject(arm, obj):
     
     xStart, yStart = arm[0][0], arm[0][1]
     xEnd, yEnd = arm[1][0], arm[1][1]
@@ -142,7 +142,7 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
     """
     for arm in armPosDist:
         for obj in objects:
-            if check_sanity(arm, obj):
+            if isInObject(arm, obj):
                 return True
 
     return False
