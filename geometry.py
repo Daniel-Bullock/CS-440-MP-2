@@ -111,12 +111,18 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
     # Algorithm inspired by:
     # https://math.stackexchange.com/questions/275529/check-if-line-intersects-with-circles-perimeter
 
+
     for obj in objects:
-        for i in armPosDist:
-            x1, y1 = i[0][0], i[0][1]
-            x2, y2 = i[1][0], i[1][1]
+        for arm in armPosDist:
+            x1, y1 = arm[0][0], arm[0][1]
+            x2, y2 = arm[1][0], arm[1][1]
             xObj, yObj = obj[0], obj[1]
-            r = obj[2]
+            pad = arm[2]
+            if not isGoal:
+                r = obj[2] + pad
+            else:
+                r = obj[2]
+
 
             aX = x1 - xObj
             aY = y1 - yObj

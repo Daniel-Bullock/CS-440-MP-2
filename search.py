@@ -40,11 +40,13 @@ def bfs(maze):
     # print("mazestart", maze.getStart())
     q.append(maze.getStart())
     # print(q)
+    found = False
     while len(q) > 0:
         curr = q.pop(0)
         # print(curr)
         if maze.isObjective(curr[0], curr[1]):
             selected = curr
+            found = True
             break
         # print(curr[0], curr[1])
         neighbors = maze.getNeighbors(curr[0], curr[1])
@@ -58,6 +60,7 @@ def bfs(maze):
 
                 if maze.isObjective(n[0], n[1]):
                     selected = n
+                    found = True
                     break
 
     curr = selected
@@ -72,7 +75,10 @@ def bfs(maze):
     path.reverse()  # backtrace
     # print(path)
 
-    if not path:
+    # if not path:
+    # return None
+
+    if not found:
         return None
 
     return path
