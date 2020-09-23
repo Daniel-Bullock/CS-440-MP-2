@@ -49,13 +49,19 @@ def transformToMaze(arm, goals, obstacles, window, granularity):
     # print(alpha_limits, beta_limits)
     offset = [alpha_limits[0], beta_limits[0]]
     # print(offset)
-    alpha, beta = alpha_limits[0], beta_limits[0] # min of alpha to start out
+    alpha, beta = alpha_limits[0], beta_limits[0]  # min of alpha to start out
 
     alpha_max = alpha_limits[1]
     beta_max = beta_limits[1]
 
-    init_alpha = arm.getArmAngle()[0]
-    init_beta = arm.getArmAngle()[1]
+    init_angle = arm.getArmAngle()
+    init_alpha = init_angle[0]
+    init_beta = init_angle[1]
+
+    #init_start = angleToIdx(init_angle, offset, granularity)
+    start = [int(math.floor(init_angle[0]/granularity))*granularity,int(math.floor(init_angle[1]/granularity))*granularity]
+    print(start)
+    #maze[init_start[0]][init_start[1]] = START_CHAR
 
     while alpha <= alpha_max:
         beta = beta_limits[0]
@@ -70,10 +76,10 @@ def transformToMaze(arm, goals, obstacles, window, granularity):
             idx1 = idx[0]
             idx2 = idx[1]
 
-            if alpha == init_alpha and beta == init_beta:
+            if alpha == start[0] and beta == start[1]:
                 maze[idx1][idx2] = START_CHAR
-                # print(alpha,beta)
-                # print("start", (idx1 , idx2))
+                print(alpha, beta)
+                print("start", (idx1, idx2))
             elif doesArmTouchObjects(arm_dist, obstacles):
                 maze[idx1][idx2] = WALL_CHAR
             elif doesArmTipTouchGoals(tip, goals):

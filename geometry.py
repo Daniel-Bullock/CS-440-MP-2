@@ -33,7 +33,7 @@ def computeCoordinate(start, length, angle):
     # print(angle, math.cos(math.radians(angle)), endX, endY)
     return (endX, endY)
 
-
+'''
 def doesArmTouchObjects(armPosDist, objects, isGoal=False):
     """Determine whether the given arm links touch any obstacle or goal
 
@@ -61,7 +61,7 @@ def doesArmTouchObjects(armPosDist, objects, isGoal=False):
                 return True
 
     return False
-
+'''
 
 def intersect(obj_pos, start, end):
     # Inspired by:
@@ -93,6 +93,61 @@ def intersect(obj_pos, start, end):
     dist = np.sqrt(dx * dx + dy * dy)  # pythagorean
 
     return dist
+
+
+def check_sanity(arm, obj):
+    
+    xStart, yStart = arm[0][0], arm[0][1]
+    xEnd, yEnd = arm[1][0], arm[1][1]
+    objX, objY = obj[0],  obj[1]
+    r = obj[2]
+
+    euclid_start = (xStart - objX) ** 2 + (yStart - objY) ** 2
+    euclid_end = (xEnd - objX) ** 2 + (yEnd - objY) ** 2
+
+    if euclid_start <= r ** 2 or euclid_end <= r ** 2:
+        return True
+
+    start2mid = np.sqrt(euclid_start)
+    angle_1 = np.arcsin((r / start2mid))
+    end2mid = np.sqrt(euclid_end)
+
+    length = np.sqrt(((xStart - xEnd) ** 2 + (yStart - yEnd) ** 2))
+    cos_ = (length ** 2 + start2mid ** 2 - end2mid ** 2) / (2 * length * start2mid)
+
+    if np.abs(cos_) > 1:
+        cos_ = round(cos_, 1)
+
+    angle_2 = np.arccos(cos_)
+
+    if angle_2 > angle_1:
+        return False
+    elif length >= start2mid * np.cos(angle_1):
+        return True
+    else:
+        return False
+
+
+def doesArmTouchObjects(armPosDist, objects, isGoal=False):
+    """Determine whether the given arm links touch any obstacle or goal
+
+        Args:
+            armPosDist (list): start and end position and padding distance of all arm links [(start, end, distance)]
+            objects (list): x-, y- coordinate and radius of object (obstacles or goals) [(x, y, r)]
+            isGoal (bool): True if the object is a goal and False if the object is an obstacle.
+                           When the object is an obstacle, consider padding distance.
+                           When the object is a goal, no need to consider padding distance.
+        Return:
+            True if touched. False if not.
+    """
+    for arm in armPosDist:
+        for obj in objects:
+            if check_sanity(arm, obj):
+                return True
+
+    return False
+
+
 
 
 def doesArmTipTouchGoals(armEnd, goals):
